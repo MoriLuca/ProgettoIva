@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "exware", "exware\exware.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LMOpcuaConnector", "LMOpcuaConnector\LMOpcuaConnector.csproj", "{15D792EE-E078-4282-8C6A-EF2C7DB0EA4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{81481CED-EFA9-4786-9139-E1C940957A83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{81481CED-EFA9-4786-9139-E1C940957A83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "awaitTets", "awaitTets\awaitTets.csproj", "{8A723558-FF2B-4530-9424-1C0147D852EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "awaitTets", "awaitTets\awaitTets.csproj", "{8A723558-FF2B-4530-9424-1C0147D852EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMLogger", "LMLogger\LMLogger.csproj", "{4B58895E-FC05-4F04-A978-E2EE159189DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8A723558-FF2B-4530-9424-1C0147D852EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A723558-FF2B-4530-9424-1C0147D852EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A723558-FF2B-4530-9424-1C0147D852EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B58895E-FC05-4F04-A978-E2EE159189DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B58895E-FC05-4F04-A978-E2EE159189DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B58895E-FC05-4F04-A978-E2EE159189DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B58895E-FC05-4F04-A978-E2EE159189DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

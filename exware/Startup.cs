@@ -28,6 +28,7 @@ namespace exware
             );
             services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<ProjectWorker>();
+            services.AddSingleton<LMLogger.Model.Logger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +44,11 @@ namespace exware
                 app.UseHsts();
             }
 
+            //logger
+            app.ApplicationServices.GetService<LMLogger.Model.Logger>()
+                .UseConsole()
+                .SetPath(@"C:\ProgramData\exware")
+                .UseTxtFile();
 
             //Attiva il client OPCUA
             app.ApplicationServices.GetService<LMOpcuaConnector.Model.OPCUAClient>().Run();
