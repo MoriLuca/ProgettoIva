@@ -3,9 +3,32 @@
 <style>
 </style>
 
-<div ondblclick="@ToggleBool" style="cursor:pointer">
+<div ondblclick=@ToggleBool style="cursor:pointer">
     @((errorMex == "") ? "Cliccami" : errorMex)
 </div>
+
+@if (errorMex != "")
+{
+    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-language">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @errorMex
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-info" @onclick="@(()=> { errorMex = ""; })">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 
 @functions{
     [Parameter] bool DisplayTagName { get; set; }
@@ -53,6 +76,7 @@
     private async void showError(string error)
     {
         errorMex = error;
+        StateHasChanged();
         await Task.Run(() => { Task.Delay(3000).Wait(); });
         errorMex = "";
         StateHasChanged();

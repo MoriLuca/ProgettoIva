@@ -11,7 +11,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\css\bootstrap\bootstrap.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\open-iconic\FONT-LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\open-iconic\ICON-LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\open-iconic\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\site.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\css\svg\led-lamp.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\favicon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

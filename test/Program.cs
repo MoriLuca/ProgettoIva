@@ -14,7 +14,7 @@ namespace test
 
             //timeout -1 == infinite
             serviceCollection.AddScoped<LMOpcuaConnector.Model.OPCUAClient>(
-                s => new LMOpcuaConnector.Model.OPCUAClient("opc.tcp://192.168.250.10:48010/", true, -1, LMOpcuaConnector.Data.TagConfigurator.BrowseTheServer)
+                s => new LMOpcuaConnector.Model.OPCUAClient("opc.tcp://192.168.250.10:48010/", true, -1, LMOpcuaConnector.Data.TagConfigurator.BrowseTheServer,LMOpcuaConnector.Data.ServerExportMethod.Name,1000,"Tags")
                 );
             serviceCollection.AddScoped<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             serviceCollection.AddScoped<ProjectWorker>();
