@@ -1,0 +1,43 @@
+﻿@inject LMOpcuaConnector.Model.OPCUAClient opc
+
+<style>
+</style>
+
+<div ondblclick="@ToggleBool" style="cursor:pointer">
+    cliccami
+</div>
+
+@functions{
+    [Parameter] bool DisplayTagName { get; set; }
+    [Parameter] string TagName { get; set; }
+
+    protected override void OnInit()
+    {
+        opc.OnTagChange += TagChanged;
+        opc.OnConnectionStatusChange += StatusChanged;
+    }
+
+    private void TagChanged(object sender, LMOpcuaConnector.Data.Tag tag)
+    {
+        if (tag.Name == TagName)
+        {
+            Invoke(() =>
+            {
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void StatusChanged(object sender, bool status)
+    {
+        Invoke(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    private void ToggleBool()
+    {
+        opc.WriteTag("Contapezzi", !(bool)opc.ListOfTags.GetTagByName(TagName)?.Value);
+    }
+}
