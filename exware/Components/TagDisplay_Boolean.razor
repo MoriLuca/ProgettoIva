@@ -38,6 +38,16 @@
 
     private void ToggleBool()
     {
-        opc.WriteTag("Contapezzi", !(bool)opc.ListOfTags.GetTagByName(TagName)?.Value);
+        try
+        {
+            bool currentValue = (bool)opc.ListOfTags.GetTagByName(TagName)?.Value;
+            opc.WriteTag("Contapezzi", !currentValue);
+        }
+        catch (Exception ex)
+        {
+            throw new NotImplementedException("Impossible eseguire l'operazione.");
+        }
+        
+
     }
 }
