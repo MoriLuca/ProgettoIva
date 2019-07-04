@@ -1,0 +1,25 @@
+@inject LMOpcuaConnector.Model.OPCUAClient opc
+
+<style>
+</style>
+
+<div class="container">
+    <p>Opc UA Server Connection Status : @(opc.ConnectionSatus.ToString() ?? "...")</p>
+</div>
+
+<div style="height:200px; width:200px; background:@(opc.ConnectionSatus? "green":"red")">
+
+</div>
+
+@functions{
+
+    protected override void OnInit() => opc.OnConnectionStatusChange += StatusChanged;
+
+    private void StatusChanged(object sender, bool status)
+    {
+        Invoke(() =>
+        {
+            StateHasChanged();
+        });
+    }
+}

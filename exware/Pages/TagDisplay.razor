@@ -1,0 +1,41 @@
+@inject LMOpcuaConnector.Model.OPCUAClient opc
+
+<style>
+    .tag-display{
+        background: @(opc.ConnectionSatus ? "white":"red");
+    }
+</style>
+
+<div class="tag-display container">
+    <p>@TagName : @(opc.ListOfTags?.GetTagByName(TagName)?.Value ?? "Questa tag non è presente nell'elenco del subscribe")</p>
+</div>
+
+@functions{
+    [Parameter] bool DisplayTagName { get; set; }
+    [Parameter] string TagName { get; set; }
+
+    protected override void OnInit()
+    {
+        opc.OnTagChange += TagChanged;
+        opc.OnConnectionStatusChange += StatusChanged;
+    }
+
+    private void TagChanged(object sender, LMOpcuaConnector.Data.Tag tag)
+    {
+        if (tag.Name == TagName)
+        {
+            Invoke(() =>
+            {
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void StatusChanged(object sender, bool status)
+    {
+        Invoke(() =>
+        {
+            StateHasChanged();
+        });
+    }
+}
