@@ -4,12 +4,13 @@
 </style>
 
 <div ondblclick="@ToggleBool" style="cursor:pointer">
-    cliccami
+    @((errorMex == "") ? "Cliccami" : errorMex)
 </div>
 
 @functions{
     [Parameter] bool DisplayTagName { get; set; }
     [Parameter] string TagName { get; set; }
+    string errorMex = "";
 
     protected override void OnInit()
     {
@@ -45,9 +46,15 @@
         }
         catch (Exception ex)
         {
-            throw new NotImplementedException("Impossible eseguire l'operazione.");
+            showError(ex.Message);
         }
-        
+    }
 
+    private async void showError(string error)
+    {
+        errorMex = error;
+        await Task.Run(() => { Task.Delay(3000).Wait(); });
+        errorMex = "";
+        StateHasChanged();
     }
 }

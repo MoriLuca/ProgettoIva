@@ -30,24 +30,30 @@ namespace LMOpcuaConnector.Model
         /// Evento per la gestione del push di modifca stato di una tag da parte del server opc ua
         /// </summary>
         public EventHandler<Tag> OnTagChange;
+
         /// <summary>
         /// Evento per la gestione del cambio di stato della connessione al server opcua
         /// </summary>
         public EventHandler<bool> OnConnectionStatusChange;
 
         private TagConfigurator tagConfigurator;
+        private ServerExportMethod serverExportMethod;
+        private string rootTagFolder;
         public ListOfTags ListOfTags;
         public bool ConnectionSatus { get; private set; }
 
 
         #region contructor
-        public OPCUAClient(string _endpointURL, bool _autoAccept, int _stopTimeout, TagConfigurator _tagConfigurator, int _publishingInterval = 1000)
+        public OPCUAClient(string _endpointURL, bool _autoAccept, int _stopTimeout, TagConfigurator _tagConfigurator,
+            ServerExportMethod _serverExportMethod, int _publishingInterval = 1000, string _rootTagsFolder = null)
         {
             tagConfigurator = _tagConfigurator;
             endpointURL = _endpointURL;
             autoAccept = _autoAccept;
             publishingInterval = _publishingInterval;
             clientRunTime = _stopTimeout <= 0 ? Timeout.Infinite : _stopTimeout * 1000;
+            serverExportMethod = _serverExportMethod;
+            rootTagFolder = _rootTagsFolder; 
             ListOfTags = new ListOfTags();
         }
         #endregion
@@ -148,7 +154,7 @@ namespace LMOpcuaConnector.Model
             session.KeepAlive += Client_KeepAlive;
             #endregion
 
-            //4 - Browse the OPC UA server namespace
+            #region Browse the OPC UA server namespace
             exitCode = ExitCode.ErrorBrowseNamespace;
             ReferenceDescriptionCollection references;
             Byte[] continuationPoint;
@@ -171,7 +177,7 @@ namespace LMOpcuaConnector.Model
 
             foreach (var rd in references)
             {
-                Console.WriteLine(" {0}, {1}, {2}", rd.DisplayName, rd.BrowseName, rd.NodeClass);
+                //Console.WriteLine(" {0}, {1}, {2}", rd.DisplayName, rd.BrowseName, rd.NodeClass);
                 ReferenceDescriptionCollection nextRefs;
                 byte[] nextCp;
                 session.Browse(
@@ -188,35 +194,46 @@ namespace LMOpcuaConnector.Model
 
                 foreach (var nextRd in nextRefs)
                 {
-                    Console.WriteLine("   + {0}, {1}, {2}", nextRd.DisplayName, nextRd.BrowseName, nextRd.NodeClass);
-                    if (rd.DisplayName == "Tags")
-                        subscriptionArray.Add(nextRd);
+
+                    //Console.WriteLine("   + {0}, {1}, {2}", nextRd.DisplayName, nextRd.BrowseName, nextRd.NodeClass);
+                    if (rd.DisplayName.Text == rootTagFolder) subscriptionArray.Add(nextRd);
                 }
             }
+            #endregion
 
-            //5 - Create a subscription with publishing interval of {publishingInterval} milliseconds.");
+            #region Create a subscription with publishing interval of {publishingInterval} milliseconds.");
             exitCode = ExitCode.ErrorCreateSubscription;
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
 
-            Console.WriteLine("6 - Add a list of items (server current time and status) to the subscription.");
             exitCode = ExitCode.ErrorMonitoredItem;
 
             var list = new List<MonitoredItem>();
 
             if (tagConfigurator == TagConfigurator.BrowseTheServer)
             {
-                //Subscribe a tutte le tags trovate con il browsing, filtrate a monte
-                foreach (var tag in subscriptionArray)
+                try
                 {
-                    list.Add(
-                        new MonitoredItem(subscription.DefaultItem)
-                        {
-                            DisplayName = tag.DisplayName.Text,
+                    //Subscribe a tutte le tags trovate con il browsing, filtrate a monte
+                    foreach (var tag in subscriptionArray)
+                    {
+                        if (tag.NodeClass != NodeClass.Variable) continue;
+
+                        list.Add(
+                            new MonitoredItem(subscription.DefaultItem)
+                            {
+                                DisplayName = tag.DisplayName.Text,
                             //StartNodeId = $"ns={tag.NodeId.NamespaceIndex};i={Convert.ToUInt32(tag.NodeId.Identifier)}"
-                            StartNodeId = $"ns={tag.NodeId.NamespaceIndex};s={tag.NodeId.Identifier}"
-                        }
-                    );
+                            StartNodeId = $"ns={tag.NodeId.NamespaceIndex};{((serverExportMethod == ServerExportMethod.Id) ? "i" : "s")}={tag.NodeId.Identifier}"
+                            }
+                        );
+                    }
                 }
+                catch (Exception ex)
+                {
+
+                    throw new NotImplementedException();
+                }
+                
             }
 
 
@@ -225,14 +242,22 @@ namespace LMOpcuaConnector.Model
                 //Subscribe a tutte le tags trovate con il browsing, filtrate a monte
                 foreach (var tag in ListOfTags.Tags)
                 {
-                    list.Add(
-                        new MonitoredItem(subscription.DefaultItem)
-                        {
-                            DisplayName = tag.Name,
-                            //StartNodeId = $"ns={tag.NodeId.NamespaceIndex};i={Convert.ToUInt32(tag.NodeId.Identifier)}"
-                            StartNodeId = $"ns={tag.NodeId.NamespaceIndex};s=tag.NodeId.Identifier"
-                        }
-                    );
+                    try
+                    {
+                        list.Add(
+                            new MonitoredItem(subscription.DefaultItem)
+                            {
+                                DisplayName = tag.Name,
+                                //StartNodeId = $"ns={tag.NodeId.NamespaceIndex};i={Convert.ToUInt32(tag.NodeId.Identifier)}"
+                                StartNodeId = $"ns={tag.NodeId.NamespaceIndex};{((serverExportMethod == ServerExportMethod.Id) ? "i" : "s")}=tag.NodeId.Identifier"
+                            }
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new NotImplementedException();
+                    }
+
                 }
             }
 
@@ -251,31 +276,39 @@ namespace LMOpcuaConnector.Model
 
 
 
-            //Aggiunta variabili da lista compilata
-            foreach (var tag in ListOfTags.Tags)
-            {
-                list.Add(
-                    new MonitoredItem(subscription.DefaultItem)
-                    {
-                        DisplayName = tag.Name,
-                        StartNodeId = tag.NodeId
-                    }
-                );
-            }
+            ////Aggiunta variabili da lista compilata
+            //foreach (var tag in ListOfTags.Tags)
+            //{
+            //    list.Add(
+            //        new MonitoredItem(subscription.DefaultItem)
+            //        {
+            //            DisplayName = tag.Name,
+            //            StartNodeId = tag.NodeId
+            //        }
+            //    );
+            //}
+
+
 
             list.ForEach(i => i.Notification += OnNotification);
             subscription.AddItems(list);
+            #endregion
 
-            Console.WriteLine("7 - Add the subscription to the session.");
+            #region Add the subscription to the session
             exitCode = ExitCode.ErrorAddSubscription;
             session.AddSubscription(subscription);
             subscription.Create();
+            #endregion
 
-            Console.WriteLine("8 - Running...Press Ctrl-C to exit...");
+            #region Running...Press Ctrl-C to exit.
             exitCode = ExitCode.ErrorRunning;
             ConnectionSatus = true;
             OnConnectionStatusChange?.Invoke(this, true);
+            #endregion
+
+            #region test
             //RunTest();
+            #endregion
 
         }
 

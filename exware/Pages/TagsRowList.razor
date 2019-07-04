@@ -1,7 +1,12 @@
-@page "/counter"
+﻿@page "/TagsRowList"
 @inject LMOpcuaConnector.Model.OPCUAClient opc
 
 @foreach (var tag in opc.ListOfTags.Tags)
 {
     <TagDisplay TagName="@tag.Name"></TagDisplay>
 }
+
+
+
+
+

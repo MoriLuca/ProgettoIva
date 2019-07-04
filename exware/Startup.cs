@@ -21,11 +21,11 @@ namespace exware
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>(
                 //s => new LMOpcuaConnector.OPCUAClient("opc.tcp://localhost:62541/discovery", true, Timeout.Infinite, LMOpcuaConnector.Data.TagConfigurator.FromTagClassList)
-                s => new LMOpcuaConnector.Model.OPCUAClient("opc.tcp://192.168.250.10:48010/", true, Timeout.Infinite, LMOpcuaConnector.Data.TagConfigurator.BrowseTheServer)
-                );
+                s => new LMOpcuaConnector.Model.OPCUAClient("opc.tcp://192.168.250.10:48010/", true, Timeout.Infinite, LMOpcuaConnector.Data.TagConfigurator.BrowseTheServer
+                , LMOpcuaConnector.Data.ServerExportMethod.Name, 1000, "Tags")
+            );
             services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<ProjectWorker>();
         }
@@ -43,7 +43,10 @@ namespace exware
                 app.UseHsts();
             }
 
+            //Attiva il client OPCUA
             app.ApplicationServices.GetService<LMOpcuaConnector.Model.OPCUAClient>().Run();
+
+            //Commentare queste opertazioni
             app.ApplicationServices.GetService<LMOpcuaConnector.Model.OPCUAClient>().OnTagChange +=
                  app.ApplicationServices.GetService<LMOpcuaConnector.Model.OPCUATagEventHandler>().TagUpdate;
             //evento gestione contapezzi
@@ -51,7 +54,7 @@ namespace exware
                 app.ApplicationServices.GetService<ProjectWorker>().ContaPezziHandler;
 
 
-           app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
 
