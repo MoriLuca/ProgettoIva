@@ -43,6 +43,7 @@ namespace exware
                 app.UseHsts();
             }
 
+
             //Attiva il client OPCUA
             app.ApplicationServices.GetService<LMOpcuaConnector.Model.OPCUAClient>().Run();
 

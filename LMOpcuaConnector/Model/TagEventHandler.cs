@@ -14,24 +14,25 @@ namespace LMOpcuaConnector.Model
 
         public void TagUpdate(object sender, Tag tag)
         {
-            switch (tag.Name)
+            try
             {
-                case "FineLotto":
-                    if ((bool)tag.Value == true) OnFineLotto?.Invoke(this, EventArgs.Empty);
-                    break;
-                case "Contapezzi":
-                    if ((bool)tag.Value == true) OnPezzoConcluso?.Invoke(this, EventArgs.Empty);
-                    break;
-                default:
-                    break;
+                switch (tag.Name)
+                {
+                    case "FineLotto":
+                        if ((bool)tag.Value == true) OnFineLotto?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Contapezzi":
+                        if ((bool)tag.Value == true) OnPezzoConcluso?.Invoke(this, EventArgs.Empty);
+                        break;
+                    default:
+                        break;
+                }
             }
-            //esemio, fire event per fine lotto
-            if (tag.Name == "FineLotto" && (bool)tag.Value == true)
+            catch (Exception ex)
             {
-                OnFineLotto?.Invoke(this, EventArgs.Empty);
+                throw new NotImplementedException();
             }
-
-
+            
         }
 
     }
