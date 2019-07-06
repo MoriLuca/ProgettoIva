@@ -71,7 +71,7 @@ namespace LMOpcuaConnector.Model
                     WriteTag(tag, value);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new NotImplementedException();
             }

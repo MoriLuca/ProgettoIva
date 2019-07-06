@@ -34,7 +34,17 @@ namespace LMOpcuaConnector.Data
 
         public Tag GetTagByName(string Name)
         {
-            return Tags.FirstOrDefault(t=>t.Name == Name);
+            try
+            {
+                return Tags.FirstOrDefault(t => t.Name == Name);
+            }
+            catch (System.Exception)
+            {
+
+#warning implemetnare
+                return null;
+            }
+            
         }
     }
 

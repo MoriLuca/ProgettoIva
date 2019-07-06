@@ -1,0 +1,27 @@
+@inject LMOpcuaConnector.Model.OPCUAClient opc
+
+<style>
+    .tag-display{
+        background: @(opc.ConnectionSatus ? "white":"red");
+    }
+</style>
+
+<button class="btn btn-success" onclick="@Connect">Esegui connessione al server</button>
+<button class="btn btn-warning" onclick="@Disconnect">Termina la connessione</button>
+
+@functions{
+
+    protected override void OnInit()
+    {
+    }
+
+    private void Connect()
+    {
+        opc.Run();
+    }
+
+    private void Disconnect()
+    {
+        opc.CloseSession();
+    }
+}

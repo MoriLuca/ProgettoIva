@@ -21,7 +21,6 @@ namespace LMOpcuaConnector.Model
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                ConnectionSatus = false;
                 OnConnectionStatusChange?.Invoke(this, false);
                 Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
 
@@ -47,7 +46,6 @@ namespace LMOpcuaConnector.Model
             reconnectHandler = null;
 
             Console.WriteLine("--- RECONNECTED ---");
-            ConnectionSatus = true;
             OnConnectionStatusChange?.Invoke(this, true);
         }
 

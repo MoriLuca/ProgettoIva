@@ -41,13 +41,16 @@ namespace LMOpcuaConnector.Model
         private ServerExportMethod serverExportMethod;
         private string rootTagFolder;
         public ListOfTags ListOfTags;
-        public bool ConnectionSatus { get; private set; }
+        public bool ConnectionSatus { get => session?.Connected ?? false; }
 
         public Task CloseSession()
         {
-            session.Close();
-            session.Dispose();
-            session = null;
+            if (session.Connected)
+            {
+                session.Close();
+                ListOfTags.Tags = null;
+                OnConnectionStatusChange?.Invoke(this, false);
+            }
             return Task.CompletedTask;
         }
 
@@ -61,7 +64,6 @@ namespace LMOpcuaConnector.Model
             clientRunTime = init.StopTimeout <= 0 ? Timeout.Infinite : init.StopTimeout * 1000;
             serverExportMethod = init.ServerExportMethod;
             rootTagFolder = init.RootTagsFolder; 
-            ListOfTags = new ListOfTags();
         }
         #endregion
 
@@ -71,6 +73,7 @@ namespace LMOpcuaConnector.Model
         {
             try
             {
+                ListOfTags = new ListOfTags();
                 RunClient().Wait();
             }
             catch (Exception ex)
@@ -309,7 +312,6 @@ namespace LMOpcuaConnector.Model
 
             #region Running...Press Ctrl-C to exit.
             exitCode = ExitCode.ErrorRunning;
-            ConnectionSatus = true;
             OnConnectionStatusChange?.Invoke(this, true);
             #endregion
 
