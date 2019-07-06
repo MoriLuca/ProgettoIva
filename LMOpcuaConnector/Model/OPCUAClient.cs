@@ -13,6 +13,7 @@ using System.Globalization;
 
 namespace LMOpcuaConnector.Model
 {
+
     public partial class OPCUAClient
     {
         const int ReconnectPeriod = 10;
@@ -50,17 +51,16 @@ namespace LMOpcuaConnector.Model
             return Task.CompletedTask;
         }
 
-        #region contructor
-        public OPCUAClient(string _endpointURL, bool _autoAccept, int _stopTimeout, TagConfigurator _tagConfigurator,
-            ServerExportMethod _serverExportMethod, int _publishingInterval = 1000, string _rootTagsFolder = null)
+        #region configurator
+        public void Init(OPCUAInitializer init)
         {
-            tagConfigurator = _tagConfigurator;
-            endpointURL = _endpointURL;
-            autoAccept = _autoAccept;
-            publishingInterval = _publishingInterval;
-            clientRunTime = _stopTimeout <= 0 ? Timeout.Infinite : _stopTimeout * 1000;
-            serverExportMethod = _serverExportMethod;
-            rootTagFolder = _rootTagsFolder; 
+            tagConfigurator = init.TagConfigurator;
+            endpointURL = init.EndpointURL;
+            autoAccept = init.AutoAccept;
+            publishingInterval = init.PublishingInterval;
+            clientRunTime = init.StopTimeout <= 0 ? Timeout.Infinite : init.StopTimeout * 1000;
+            serverExportMethod = init.ServerExportMethod;
+            rootTagFolder = init.RootTagsFolder; 
             ListOfTags = new ListOfTags();
         }
         #endregion

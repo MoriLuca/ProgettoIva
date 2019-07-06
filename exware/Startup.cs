@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using exware.Data;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace exware
 {
@@ -21,10 +22,7 @@ namespace exware
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>(
-                s => new LMOpcuaConnector.Model.OPCUAClient("opc.tcp://192.168.250.10:48010/", true, Timeout.Infinite, LMOpcuaConnector.Data.TagConfigurator.BrowseTheServer
-                , LMOpcuaConnector.Data.ServerExportMethod.Name, 1000, "Tags")
-            );
+            services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>();
             services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<LMLogger.Model.Logger>();
             services.AddSingleton<EventHandlerLinker>();

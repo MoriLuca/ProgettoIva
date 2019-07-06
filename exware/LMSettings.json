@@ -1,0 +1,12 @@
+{
+  //Configurazione del server OPC UA
+  "OpcServerConfig": {
+    "EndpointURL": "opc.tcp://192.168.250.10:48010/",
+    "AutoAccept": true, //Auto accettazione dei certificati, non viene controllato proprio credo
+    "StopTimeout": -1, //-1 = infinite, da verificare cosa vuol dire, credo che con timeout continua a riprovare a stabilire la connessione
+    "TagConfigurator": 0, // 0-> browse the server at the folder required, 1-> readJson, 2-> From Class List
+    "ServerExportMethod": 1, //0 -> by id, 1-> by name
+    "PublishingInterval": 1000, //publish interval delle tag con subscribe
+    "RootTagsFolder": "Tags" //cartella presa in considerazione per il subscribe, tutte la tag dentro questa cartella
+  }
+}

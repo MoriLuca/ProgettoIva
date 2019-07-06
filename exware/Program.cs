@@ -15,14 +15,24 @@ namespace exware
     {
         public static void Main(string[] args)
         {
+            
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("LMSettings.json", false)
+                .Build();
+
+
+            return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                webBuilder.UseConfiguration(config);
                 webBuilder.UseStartup<Startup>();
             });
+        }
     }
 }
