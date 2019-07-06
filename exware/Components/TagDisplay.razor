@@ -1,6 +1,7 @@
 @inject LMOpcuaConnector.Model.OPCUAClient opc
 
 <style>
+
     .cont {
         display: grid;
         grid-template-columns: 1fr 2fr .1fr;
@@ -42,16 +43,18 @@
         float: left;
         height: 100%;
     }
-    .corner{
+
+    .corner {
         background: #f7f7f7;
         width: 20%;
         float: right;
         height: 100%;
     }
+
 </style>
 
 
-<div class="cont"
+<div class="cont" title="[@TagName] -> Ultima Lettura : @(Tag.LastSync.ToString()) @((Tag.FirstRead)?"l'aggiornamento per questa tag non è mai avvenuto dopo la prima connessione al Server.":"")"
      style="background: @(opc.ConnectionSatus ? " rgba(0,0,0,0.03)":"rgba(255,0,0,0.3)");">
     <div class="col-sm" style="background: #6ce86c33;">
         @TagName
@@ -70,7 +73,7 @@
 
 @if (ShowInputForm && opc.ConnectionSatus)
 {
-    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;">
+    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;" >
         <div class="modal-dialog" role="document">
             <div class="modal-content modal-language">
                 <div class="modal-header">
@@ -87,12 +90,22 @@
                                @onfocus="@(() => { ShowConfirm = false; })"
                                @onkeyup="@Kup" />
                     }
-                    @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int16)
+                    @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int16 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int32 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int64 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt16 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt32 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt64 ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Integer ||
+                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInteger)
                     {
                         <input type="number" class="form-control" placeholder="Nuovo Valore"
-                               @bind="NewValString"
+                               step="1"
+                               @bind="@NewValString"
+                               @on="@(()=> { NewValString = NewValString.Replace(",","").Replace(".",""); })"
                                @onfocus="@(() => { ShowConfirm = false; })"
                                @onkeyup="@Kup" />
+                        <button class="btn btn-success mt-4" style="width:100%;" @onclick="@(() => { ShowConfirm = true; })">Ok</button>
                     }
                     @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Boolean)
                     {
@@ -132,6 +145,7 @@
 
     protected override void OnInit()
     {
+        NewValString = "";
         Tag = opc.ListOfTags?.GetTagByName(TagName);
         if (Tag == null) Tag = new LMOpcuaConnector.Data.Tag();
         opc.OnTagChange += TagChanged;
@@ -186,4 +200,5 @@
         NewValString = val.ToString();
         ShowConfirm = false;
     }
+
 }
