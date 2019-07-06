@@ -10,10 +10,11 @@ using LMOpcuaConnector.Data;
 using System.Linq;
 using System.IO;
 using System.Globalization;
+using Microsoft.Extensions.Hosting;
 
 namespace LMOpcuaConnector.Model
 {
-    public partial class OPCUAClient
+    public partial class OPCUAClient : IHostedService
     {
         const int ReconnectPeriod = 10;
         Session session;
@@ -137,20 +138,20 @@ namespace LMOpcuaConnector.Model
                 Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
             }
 
-            //2 - Discover endpoints of {0}.", endpointURL);
+            //Discover endpoints of {0}.", endpointURL);
             exitCode = ExitCode.ErrorDiscoverEndpoints;
             var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
-            Console.WriteLine("    Selected endpoint uses: {0}",
-                selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
+            //Console.WriteLine("    Selected endpoint uses: {0}",
+                //selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
-            Console.WriteLine("3 - Create a session with OPC UA server.");
+            //Create a session with OPC UA server.
             exitCode = ExitCode.ErrorCreateSession;
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
             session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
 
             // register keep alive handler
-            session.KeepAliveInterval = 1000;
+            session.KeepAliveInterval = 5000;
             session.KeepAlive += Client_KeepAlive;
             #endregion
 
@@ -344,6 +345,17 @@ namespace LMOpcuaConnector.Model
             }
         }
 
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            Run();
+            return Task.CompletedTask;
+        }
 
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            session?.Close();
+            session?.Dispose();
+            return Task.CompletedTask;
+        }
     }
 }

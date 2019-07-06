@@ -11,10 +11,12 @@ namespace OpcuaAsService
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly LMOpcuaConnector.Model.OPCUAClient _opc;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, LMOpcuaConnector.Model.OPCUAClient opc)
         {
             _logger = logger;
+            _opc = opc;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
