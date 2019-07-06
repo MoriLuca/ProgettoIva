@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LMLogger.Model
 {
-    public class Logger
+    public class Logger 
     {
         private string _path;
         private string _filePrefix;

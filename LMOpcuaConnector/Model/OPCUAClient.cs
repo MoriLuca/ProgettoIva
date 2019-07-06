@@ -42,6 +42,13 @@ namespace LMOpcuaConnector.Model
         public ListOfTags ListOfTags;
         public bool ConnectionSatus { get; private set; }
 
+        public Task CloseSession()
+        {
+            session.Close();
+            session.Dispose();
+            session = null;
+            return Task.CompletedTask;
+        }
 
         #region contructor
         public OPCUAClient(string _endpointURL, bool _autoAccept, int _stopTimeout, TagConfigurator _tagConfigurator,
