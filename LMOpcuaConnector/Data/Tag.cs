@@ -10,6 +10,7 @@ namespace LMOpcuaConnector.Data
         public Opc.Ua.TypeInfo Type { get; set; }
         public DateTime LastSync { get; set; }
         public Opc.Ua.StatusCode StatusCode { get; set; }
+        public bool FirstRead { get; set; }
     }
 
 }

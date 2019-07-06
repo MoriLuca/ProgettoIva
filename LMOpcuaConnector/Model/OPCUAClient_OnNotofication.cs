@@ -37,6 +37,7 @@ namespace LMOpcuaConnector.Model
                 }
                 else
                 {
+                    tag.FirstRead = true;
                     ListOfTags.Tags.Add(tag);
                 }
 

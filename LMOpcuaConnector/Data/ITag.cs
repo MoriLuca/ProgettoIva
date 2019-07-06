@@ -8,6 +8,7 @@ namespace LMOpcuaConnector.Data
         String Name { get; set; }
         object Value { get; set; }
         Opc.Ua.TypeInfo Type { get; set; }
+        bool FirstRead { get; set; }
     }
 
 }

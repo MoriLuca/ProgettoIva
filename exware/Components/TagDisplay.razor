@@ -35,6 +35,19 @@
     .selected {
         opacity: 1;
     }
+
+    .first-read {
+        background: #155724;
+        width: 5px;
+        float: left;
+        height: 100%;
+    }
+    .corner{
+        background: #f7f7f7;
+        width: 20%;
+        float: right;
+        height: 100%;
+    }
 </style>
 
 
@@ -44,11 +57,14 @@
         @TagName
     </div>
     <div class="col-sm">
-        @(ActualValue ?? "Tag non presente.")
+        @(Tag?.Value ?? "Tag non presente.")
     </div>
     <div class="col-sm"
-         style="background:#28a74563; cursor:pointer; text-align: center;"
+         style="background:#28a74563; cursor:pointer; text-align: center; padding:0;"
          @onclick="@(() => {if (opc.ConnectionSatus) ShowInputForm = true; })">
+
+        <div class="@(((bool)Tag?.FirstRead)?"first-read":"")"></div>
+        <div class="corner"></div>
     </div>
 </div>
 
@@ -112,11 +128,12 @@
     bool ShowConfirm { get; set; }
     string NewValString { get; set; }
     bool NewBoolVal { get; set; }
-    object ActualValue { get; set; }
+    LMOpcuaConnector.Data.Tag Tag;
 
     protected override void OnInit()
     {
-        ActualValue = opc.ListOfTags?.GetTagByName(TagName)?.Value;
+        Tag = opc.ListOfTags?.GetTagByName(TagName);
+        if (Tag == null) Tag = new LMOpcuaConnector.Data.Tag();
         opc.OnTagChange += TagChanged;
         opc.OnConnectionStatusChange += StatusChanged;
     }
@@ -125,7 +142,7 @@
     {
         if (tag.Name == TagName)
         {
-            ActualValue = tag.Value;
+            Tag = tag;
             Invoke(() =>
             {
                 StateHasChanged();
