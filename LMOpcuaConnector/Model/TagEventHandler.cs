@@ -9,11 +9,15 @@ namespace LMOpcuaConnector.Model
     /// </summary>
     public  class OPCUATagEventHandler
     {
+        //eventi boolenani, non richiedono il passaggio di informazioni
         public EventHandler OnFineLotto;
         public EventHandler OnPezzoConcluso;
 
+        public EventHandler<Tag> OnContapezziChange;
+
         public void TagUpdate(object sender, Tag tag)
         {
+
             try
             {
                 switch (tag.Name)
@@ -23,6 +27,9 @@ namespace LMOpcuaConnector.Model
                         break;
                     case "Contapezzi":
                         if ((bool)tag.Value == true) OnPezzoConcluso?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "NumeroPezziProdottiProgramma_1":
+                        OnContapezziChange?.Invoke(this, tag);
                         break;
                     default:
                         break;

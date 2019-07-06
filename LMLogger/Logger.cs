@@ -17,7 +17,7 @@ namespace LMLogger.Model
             try
             {
                 if (Console) System.Console.WriteLine($"{sender} : {txt}");
-                if (TxtFile) WriteFile($"{DateTime.Now.ToString("hh:mm:ss")} || {sender} : {txt}");
+                if (TxtFile) WriteFile($"{DateTime.Now.ToString("hh:mm:ss")} # {sender} # {txt}");
             }
             catch (Exception ex)
             {

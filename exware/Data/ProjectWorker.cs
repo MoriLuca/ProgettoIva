@@ -1,21 +1,22 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using LMLogger.Model;
+using LMOpcuaConnector.Model;
 
 namespace exware.Data
 {
-    public class ProjectWorker
+    public class EventHandlerLinker
     {
-        LMOpcuaConnector.Model.OPCUAClient opc;
-        private readonly LMLogger.Model.Logger logger;
+        private readonly OPCUAClient opc;
+        private readonly Logger logger;
 
-        public ProjectWorker(LMOpcuaConnector.Model.OPCUAClient _opc,
-                             LMLogger.Model.Logger _logger)
+        #region ctor
+        public EventHandlerLinker(OPCUAClient _opc,Logger _logger)
         {
             opc = _opc;
             logger = _logger;
         }
-
+        #endregion
 
         //Subscribe all'evento contapezzi aggiornato.
         //Il contapezzi viene settato a true dal PLC, deve essere resettato dal PC
@@ -33,9 +34,7 @@ namespace exware.Data
                 {
                     //reset della tag contapezzi
                     Task.Delay(5000).Wait();
-                    Console.WriteLine("scrittura db terminata");
                 });
-                Console.WriteLine("scrittura db lanciata");
             }
             catch (Exception)
             {
@@ -47,12 +46,16 @@ namespace exware.Data
                 {
                     //reset della tag contapezzi
                     opc.WriteTag("Contapezzi", false);
-                    Console.WriteLine("reset tag contapezzi terminata");
                 });
                 logger.LogInfo(this, "Contappezzi intercettato, tag resettata");
 
             }
 
+        }
+
+        public void ContapezziHasChanged(object sender, LMOpcuaConnector.Data.Tag tag)
+        {
+            logger.LogInfo(this, $"Il valore del contapezzi per il programma 1 vale : {tag.Value}");
         }
 
     }
