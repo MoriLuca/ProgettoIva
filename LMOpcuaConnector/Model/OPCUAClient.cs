@@ -48,11 +48,20 @@ namespace LMOpcuaConnector.Model
             if (session.Connected)
             {
                 session.Close();
-                ListOfTags.Tags = null;
+                session.Dispose();
                 OnConnectionStatusChange?.Invoke(this, false);
             }
             return Task.CompletedTask;
         }
+        public Task OpenSession()
+        {
+            if (session != null && !session.Connected)
+            {
+                Run();
+            }
+            return Task.CompletedTask;
+        }
+
 
         #region configurator
         public void Init(OPCUAInitializer init)
@@ -63,7 +72,8 @@ namespace LMOpcuaConnector.Model
             publishingInterval = init.PublishingInterval;
             clientRunTime = init.StopTimeout <= 0 ? Timeout.Infinite : init.StopTimeout * 1000;
             serverExportMethod = init.ServerExportMethod;
-            rootTagFolder = init.RootTagsFolder; 
+            rootTagFolder = init.RootTagsFolder;
+            ListOfTags = new ListOfTags();
         }
         #endregion
 
@@ -73,7 +83,7 @@ namespace LMOpcuaConnector.Model
         {
             try
             {
-                ListOfTags = new ListOfTags();
+
                 RunClient().Wait();
             }
             catch (Exception ex)
@@ -83,24 +93,6 @@ namespace LMOpcuaConnector.Model
                 return;
             }
 
-            //ManualResetEvent quitEvent = new ManualResetEvent(false);
-            //try
-            //{
-            //    Console.CancelKeyPress += (sender, eArgs) =>
-            //    {
-            //        quitEvent.Set();
-            //        eArgs.Cancel = true;
-            //        Console.WriteLine("cancel premuto");
-            //    };
-            //}
-            //catch
-            //{
-            //}
-
-            //// wait for timeout or Ctrl-C
-            //quitEvent.WaitOne(clientRunTime);
-
-            // return error conditions
             if (session.KeepAliveStopped)
             {
                 exitCode = ExitCode.ErrorNoKeepAlive;
@@ -116,7 +108,7 @@ namespace LMOpcuaConnector.Model
             exitCode = ExitCode.ErrorCreateApplication;
             ApplicationInstance application = new ApplicationInstance
             {
-                ApplicationName = "UA Core Sample Client",
+                ApplicationName = "LMOpcuaSession",
                 ApplicationType = ApplicationType.Client,
                 ConfigSectionName = Utils.IsRunningOnMono() ? "Opc.Ua.MonoSampleClient" : "Opc.Ua.SampleClient"
             };
@@ -153,11 +145,11 @@ namespace LMOpcuaConnector.Model
             Console.WriteLine("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
-            Console.WriteLine("3 - Create a session with OPC UA server.");
+            // Create a session with OPC UA server.");
             exitCode = ExitCode.ErrorCreateSession;
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+            session = await Session.Create(config, endpoint, false, "LMOpcuaSession", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
 
             // register keep alive handler
             session.KeepAliveInterval = 1000;

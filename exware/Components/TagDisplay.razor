@@ -1,21 +1,122 @@
 @inject LMOpcuaConnector.Model.OPCUAClient opc
 
 <style>
-    .tag-display{
-        background: @(opc.ConnectionSatus ? "white":"red");
+    .cont {
+        display: grid;
+        grid-template-columns: 1fr 2fr .1fr;
+        grid-template-rows: 1rf;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all .15s;
+    }
+
+        .cont:hover {
+            border: 2px solid #28a74563;
+        }
+
+    .bool_command {
+        transition: all .3s;
+        color: white;
+        border-radius: 10px;
+        padding: 0.5em;
+        font-size: 140%;
+        opacity: 0.1;
+        font-style: italic;
+    }
+
+    .off {
+        background: #bf3838;
+    }
+
+    .on {
+        background: #28a745;
+    }
+
+    .selected {
+        opacity: 1;
     }
 </style>
 
-<div class="tag-display container">
-    <p>@TagName : @(opc.ListOfTags?.GetTagByName(TagName)?.Value ?? "Questa tag non è presente nell'elenco del subscribe")</p>
+
+<div class="cont"
+     style="background: @(opc.ConnectionSatus ? " rgba(0,0,0,0.03)":"rgba(255,0,0,0.3)");">
+    <div class="col-sm" style="background: #6ce86c33;">
+        @TagName
+    </div>
+    <div class="col-sm">
+        @(ActualValue ?? "Tag non presente.")
+    </div>
+    <div class="col-sm"
+         style="background:#28a74563; cursor:pointer; text-align: center;"
+         @onclick="@(() => {if (opc.ConnectionSatus) ShowInputForm = true; })">
+    </div>
 </div>
+
+@if (ShowInputForm && opc.ConnectionSatus)
+{
+    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-language">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imposta nuovo valore per @TagName</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@CloseInputForm">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.String)
+                    {
+                        <input type="text" class="form-control" placeholder="Nuovo Valore"
+                               @bind="NewValString"
+                               @onfocus="@(() => { ShowConfirm = false; })"
+                               @onkeyup="@Kup" />
+                    }
+                    @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int16)
+                    {
+                        <input type="number" class="form-control" placeholder="Nuovo Valore"
+                               @bind="NewValString"
+                               @onfocus="@(() => { ShowConfirm = false; })"
+                               @onkeyup="@Kup" />
+                    }
+                    @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Boolean)
+                    {
+                        <div class="container">
+                            <div class="row" style="text-align:center;">
+                                <div class="col"><div class="off bool_command @((NewValString == "False")?"selected":"")" @onclick="@(()=> { setBoolValue(false); })">OFF</div></div>
+                                <div class="col"><div class="on bool_command @((NewValString == "True")?"selected":"")" @onclick="@(()=> { setBoolValue(true); })">ON</div></div>
+                            </div>
+                        </div>
+
+
+                    }
+                    <button class="btn btn-success mt-4" style="width:100%;" @onclick="@(() => { ShowConfirm = true; })">Ok</button>
+
+                </div>
+                @if (ShowConfirm)
+                {
+                    <div class="modal-footer animated fadeIn">
+                        <button class="btn btn-success" @onclick="@WriteNewValue">Applica</button>
+                        <button class="btn btn-dark" @onclick="@CloseInputForm">Annulla</button>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+}
 
 @functions{
     [Parameter] bool DisplayTagName { get; set; }
     [Parameter] string TagName { get; set; }
+    bool ShowInputForm { get; set; }
+    bool ShowConfirm { get; set; }
+    string NewValString { get; set; }
+    bool NewBoolVal { get; set; }
+    object ActualValue { get; set; }
 
     protected override void OnInit()
     {
+        ActualValue = opc.ListOfTags?.GetTagByName(TagName)?.Value;
         opc.OnTagChange += TagChanged;
         opc.OnConnectionStatusChange += StatusChanged;
     }
@@ -24,6 +125,7 @@
     {
         if (tag.Name == TagName)
         {
+            ActualValue = tag.Value;
             Invoke(() =>
             {
                 StateHasChanged();
@@ -35,7 +137,36 @@
     {
         Invoke(() =>
         {
+            var i = status;
             StateHasChanged();
         });
+    }
+
+    private void CloseInputForm()
+    {
+        ShowConfirm = false;
+        ShowInputForm = false;
+    }
+
+    private void WriteNewValue()
+    {
+        opc.WriteTag(TagName, NewValString);
+        CloseInputForm();
+    }
+
+    private void Kup(UIKeyboardEventArgs e)
+    {
+
+        if (e.Key == "Enter")
+        {
+            if (!ShowConfirm) ShowConfirm = true;
+            else WriteNewValue();
+        }
+    }
+
+    private void setBoolValue(bool val)
+    {
+        NewValString = val.ToString();
+        ShowConfirm = false;
     }
 }
