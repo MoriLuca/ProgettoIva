@@ -41,21 +41,24 @@ namespace LMOpcuaConnector.Model
         private ServerExportMethod serverExportMethod;
         private string rootTagFolder;
         public ListOfTags ListOfTags;
-        public bool ConnectionSatus { get => session?.Connected ?? false; }
+        //purtroppo creato stato gestito da me, perchè utilizzando quello interno della sessione non funzionava.
+        //forse bisognerebbe guardare lo stato del keepalive
+        public bool ConnectionSatus { get; private set; }
 
         public Task CloseSession()
         {
-            if (session.Connected)
+            if (session?.Connected == true)
             {
                 session.Close();
                 session.Dispose();
+                ConnectionSatus = false;
                 OnConnectionStatusChange?.Invoke(this, false);
             }
             return Task.CompletedTask;
         }
         public Task OpenSession()
         {
-            if (session != null && !session.Connected)
+            if (session?.Connected == false || session == null)
             {
                 Run();
             }
@@ -303,6 +306,7 @@ namespace LMOpcuaConnector.Model
 
             #region Running...Press Ctrl-C to exit.
             exitCode = ExitCode.ErrorRunning;
+            ConnectionSatus = true;
             OnConnectionStatusChange?.Invoke(this, true);
             #endregion
 

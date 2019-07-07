@@ -21,11 +21,12 @@ namespace LMOpcuaConnector.Model
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                OnConnectionStatusChange?.Invoke(this, false);
                 Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
 
                 if (reconnectHandler == null)
                 {
+                    ConnectionSatus = false;
+                    OnConnectionStatusChange?.Invoke(this, false);
                     Console.WriteLine("--- RECONNECTING ---");
                     reconnectHandler = new SessionReconnectHandler();
                     reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
@@ -46,6 +47,7 @@ namespace LMOpcuaConnector.Model
             reconnectHandler = null;
 
             Console.WriteLine("--- RECONNECTED ---");
+            ConnectionSatus = true;
             OnConnectionStatusChange?.Invoke(this, true);
         }
 
