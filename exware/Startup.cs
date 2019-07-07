@@ -25,6 +25,7 @@ namespace exware
             services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>();
             services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<LMLogger.Model.Logger>();
+            services.AddSingleton<LMEmail.Model.EmailHandler>();
             services.AddSingleton<EventHandlerLinker>();
             services.AddHostedService<Services.Worker>();
         }

@@ -31,7 +31,7 @@ namespace LMOpcuaConnector.Model
                         if ((bool)tag.Value == true) OnFineLotto?.Invoke(this, EventArgs.Empty);
                         break;
                     case "Contapezzi":
-                        if ((bool)tag.Value == true) OnPezzoConcluso?.Invoke(this, EventArgs.Empty);
+                        if ((bool)tag.Value == true && !tag.FirstRead) OnPezzoConcluso?.Invoke(this, EventArgs.Empty);
                         break;
                     case "NumeroPezziProdottiProgramma_1":
                         OnContapezziChange?.Invoke(this, tag);

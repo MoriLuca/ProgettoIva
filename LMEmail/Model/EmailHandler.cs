@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace LMEmail.Model
 {
-    class EmailHandler
+    public class EmailHandler
     {
         private SmtpClient smtp;
+        private string _from = "CoreApp@C#.run";
+        private string _to = "mori.luca@hotmail.it";
 
         public EmailHandler()
         {
@@ -22,7 +24,7 @@ namespace LMEmail.Model
             };
         }
 
-        public async Task SendEmail(string from, string to, string subj, string body, bool isHtml)
+        public void SendEmail(string from, string to, string subj, string body, bool isHtml)
         {
             using (var message = new MailMessage(from, to)
             {
@@ -31,9 +33,14 @@ namespace LMEmail.Model
                 IsBodyHtml = isHtml
             })
             {
-                if (smtp!=null)
-                    await smtp.SendMailAsync(message);
+                if (smtp != null)
+                    smtp.Send(message);
             }
+        }
+
+        public void SendEmailWithDefaultSettings(string subj, string body, bool isHtml)
+        {
+            SendEmail(_from, _to, subj, body, isHtml);
         }
 
     }

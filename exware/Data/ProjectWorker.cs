@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using LMLogger.Model;
 using LMOpcuaConnector.Model;
+using LMEmail.Model;
 
 namespace exware.Data
 {
@@ -9,12 +10,14 @@ namespace exware.Data
     {
         private readonly OPCUAClient opc;
         private readonly Logger logger;
+        private readonly EmailHandler email;
 
         #region ctor
-        public EventHandlerLinker(OPCUAClient _opc,Logger _logger)
+        public EventHandlerLinker(OPCUAClient _opc,Logger _logger, EmailHandler _email)
         {
             opc = _opc;
             logger = _logger;
+            email = _email;
         }
         #endregion
 
@@ -24,31 +27,13 @@ namespace exware.Data
         {
             try
             {
-                //lettura parametri da OPC
-                //...
-                int pezzi = 70;
-                int temip = 42;
-                //scrittura dei parametri su database
-                //..
-                Task.Run(() =>
-                {
-                    //reset della tag contapezzi
-                    Task.Delay(5000).Wait();
-                });
-            }
-            catch (Exception)
-            {
-                throw new NotImplementedException();
-            }
-            finally
-            {
-                Task.Run(() =>
-                {
-                    //reset della tag contapezzi
-                    opc.WriteTag("Contapezzi", false);
-                });
                 logger.LogInfo(this, "Contappezzi intercettato, tag resettata");
-
+                //email.SendEmailWithDefaultSettings("Contapezzi", "<h2>Contappezzi incrementato.</h2>", true);
+                opc.WriteTag("Contapezzi", false);
+            }
+            catch
+            {
+                //await email.SendEmailWithDefaultSettings("Contapezzi", "<h2>Contappezzi incrementato.</h2>", true);
             }
 
         }
