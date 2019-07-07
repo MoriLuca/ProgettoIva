@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LMOpcuaConnector", "LMOpcua
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LMLogger", "LMLogger\LMLogger.csproj", "{4B58895E-FC05-4F04-A978-E2EE159189DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "json", "json\json.csproj", "{FB4DE8CE-D57A-4D1A-A730-8F783E7A5685}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "json", "json\json.csproj", "{FB4DE8CE-D57A-4D1A-A730-8F783E7A5685}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMEmail", "LMEmail\LMEmail.csproj", "{8EDF8A3F-1A4A-4FB7-88BE-54BC4C3E30A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{FB4DE8CE-D57A-4D1A-A730-8F783E7A5685}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB4DE8CE-D57A-4D1A-A730-8F783E7A5685}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB4DE8CE-D57A-4D1A-A730-8F783E7A5685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDF8A3F-1A4A-4FB7-88BE-54BC4C3E30A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDF8A3F-1A4A-4FB7-88BE-54BC4C3E30A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDF8A3F-1A4A-4FB7-88BE-54BC4C3E30A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDF8A3F-1A4A-4FB7-88BE-54BC4C3E30A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
