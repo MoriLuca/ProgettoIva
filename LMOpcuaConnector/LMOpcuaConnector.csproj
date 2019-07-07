@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LMLogger\LMLogger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Opcua.Client.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

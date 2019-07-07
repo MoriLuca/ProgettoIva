@@ -50,7 +50,6 @@
         float: right;
         height: 100%;
     }
-
 </style>
 
 
@@ -73,7 +72,7 @@
 
 @if (ShowInputForm && opc.ConnectionSatus)
 {
-    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;" >
+    <div class="modal lang-modal" tabindex="-1" role="dialog" style="display:block; background: #0e100f87;">
         <div class="modal-dialog" role="document">
             <div class="modal-content modal-language">
                 <div class="modal-header">
@@ -87,25 +86,23 @@
                     {
                         <input type="text" class="form-control" placeholder="Nuovo Valore"
                                @bind="NewValString"
-                               @onfocus="@(() => { ShowConfirm = false; })"
+                               @onfocus="@(() => { ValidationOK = false; })"
                                @onkeyup="@Kup" />
                     }
                     @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int16 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int32 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int64 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt16 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt32 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt64 ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Integer ||
-                        opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInteger)
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int32 ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Int64 ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt16 ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt32 ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInt64 ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Integer ||
+                opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.UInteger)
                     {
                         <input type="number" class="form-control" placeholder="Nuovo Valore"
                                step="1"
                                @bind="@NewValString"
-                               @on="@(()=> { NewValString = NewValString.Replace(",","").Replace(".",""); })"
-                               @onfocus="@(() => { ShowConfirm = false; })"
+                               @onfocus="@(() => { ValidationOK = false; })"
                                @onkeyup="@Kup" />
-                        <button class="btn btn-success mt-4" style="width:100%;" @onclick="@(() => { ShowConfirm = true; })">Ok</button>
                     }
                     @if (opc.ListOfTags?.GetTagByName(TagName)?.Type.BuiltInType == Opc.Ua.BuiltInType.Boolean)
                     {
@@ -118,10 +115,18 @@
 
 
                     }
-                    <button class="btn btn-success mt-4" style="width:100%;" @onclick="@(() => { ShowConfirm = true; })">Ok</button>
+                    <button class="btn btn-success mt-4" style="width:100%;" @onclick=@Validate>Verifica Valore Inserito per @Tag.Type.BuiltInType.ToString()</button>
+
+                    @if (ErrorMessageDisplay)
+                    {
+                        <div class="alert alert-warning mt-2" role="alert">
+                            @ErrorMessage
+                        </div>
+                    }
+
 
                 </div>
-                @if (ShowConfirm)
+                @if (ValidationOK)
                 {
                     <div class="modal-footer animated fadeIn">
                         <button class="btn btn-success" @onclick="@WriteNewValue">Applica</button>
@@ -138,10 +143,12 @@
     [Parameter] bool DisplayTagName { get; set; }
     [Parameter] string TagName { get; set; }
     bool ShowInputForm { get; set; }
-    bool ShowConfirm { get; set; }
+    bool ValidationOK { get; set; }
     string NewValString { get; set; }
     bool NewBoolVal { get; set; }
     LMOpcuaConnector.Data.Tag Tag;
+    string ErrorMessage { get; set; }
+    bool ErrorMessageDisplay { get; set; }
 
     protected override void OnInit()
     {
@@ -175,7 +182,7 @@
 
     private void CloseInputForm()
     {
-        ShowConfirm = false;
+        ValidationOK = false;
         ShowInputForm = false;
     }
 
@@ -190,15 +197,154 @@
 
         if (e.Key == "Enter")
         {
-            if (!ShowConfirm) ShowConfirm = true;
-            else WriteNewValue();
+            Validate();
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(ErrorMessage)) ErrorMessage = "";
+            ErrorMessageDisplay = false;
         }
     }
 
     private void setBoolValue(bool val)
     {
         NewValString = val.ToString();
-        ShowConfirm = false;
+        ValidationOK = false;
     }
+
+    #region Confirm Validation
+
+    private void ValidationFailed(string ExMessage)
+    {
+        ErrorMessage = ExMessage;
+        ErrorMessage += $" Il tipo di valore da inserire deve essere un {Tag.Type.BuiltInType.ToString()}"; ;
+        ErrorMessageDisplay = true;
+    }
+
+    private void Validate()
+    {
+        switch (Tag.Type.BuiltInType)
+        {
+            case Opc.Ua.BuiltInType.Int16:
+                try
+                {
+                    Convert.ToInt16(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+
+            case Opc.Ua.BuiltInType.Int32:
+                try
+                {
+                    Convert.ToInt32(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+
+            case Opc.Ua.BuiltInType.Int64:
+                try
+                {
+                    Convert.ToInt64(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+
+            case Opc.Ua.BuiltInType.UInt16:
+                try
+                {
+                    Convert.ToUInt16(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+
+            case Opc.Ua.BuiltInType.UInt32:
+                try
+                {
+                    Convert.ToUInt32(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+
+            case Opc.Ua.BuiltInType.UInt64:
+                try
+                {
+                    Convert.ToUInt64(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+            case Opc.Ua.BuiltInType.String:
+                try
+                {
+                    Convert.ToString(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+            case Opc.Ua.BuiltInType.Boolean:
+                try
+                {
+                    Convert.ToBoolean(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+            case Opc.Ua.BuiltInType.Float:
+                try
+                {
+                    Convert.ToDecimal(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+            case Opc.Ua.BuiltInType.Double:
+                try
+                {
+                    Convert.ToDouble(NewValString);
+                    ValidationOK = true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationFailed(ex.Message);
+                }
+                break;
+            default:
+                ValidationFailed("Formato non implementato, Tipo di dato non ancora gestito");
+                break;
+        }
+    }
+    #endregion
 
 }

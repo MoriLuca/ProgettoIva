@@ -9,11 +9,16 @@ namespace LMOpcuaConnector.Model
     /// </summary>
     public  class OPCUATagEventHandler
     {
+        private readonly LMLogger.Model.Logger _logger;
         //eventi boolenani, non richiedono il passaggio di informazioni
         public EventHandler OnFineLotto;
         public EventHandler OnPezzoConcluso;
-
         public EventHandler<Tag> OnContapezziChange;
+
+        public OPCUATagEventHandler(LMLogger.Model.Logger logger)
+        {
+            _logger = logger;
+        }
 
         public void TagUpdate(object sender, Tag tag)
         {
@@ -37,7 +42,7 @@ namespace LMOpcuaConnector.Model
             }
             catch (Exception ex)
             {
-                throw new NotImplementedException();
+                _logger.LogInfo(this,$"Tag Update event for {tag.Name}, throw exception : {ex.Message}");
             }
             
         }
