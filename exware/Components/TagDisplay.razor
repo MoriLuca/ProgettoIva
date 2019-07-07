@@ -4,7 +4,7 @@
 
     .cont {
         display: grid;
-        grid-template-columns: 1fr 2fr .1fr;
+        grid-template-columns: 3fr 2fr .3fr;
         grid-template-rows: 1rf;
         border-radius: 10px;
         overflow: hidden;
@@ -62,8 +62,8 @@
         @(Tag?.Value ?? "Tag non presente.")
     </div>
     <div class="col-sm"
-         style="background:#28a74563; cursor:pointer; text-align: center; padding:0;"
-         @onclick="@(() => {if (opc.ConnectionSatus) ShowInputForm = true; })">
+         style="background:@((Editable)?"#28a74563":"#8080802e"); @((Editable)?"cursor:pointer;":"") text-align: center; padding:0;"
+         @onclick="@(() => {if (opc.ConnectionSatus && Editable) ShowInputForm = true; })">
 
         <div class="@(((bool)Tag?.FirstRead)?"first-read":"")"></div>
         <div class="corner"></div>
@@ -141,7 +141,14 @@
 
 @functions{
     [Parameter] bool DisplayTagName { get; set; }
+    [Parameter] bool Editable { get; set; }
     [Parameter] string TagName { get; set; }
+
+    //per ora non utilizzati, probabilmente hanno senso solo se le tags vengono dichiarate e non browserate
+    [Parameter] string MinVal { get; set; }
+    [Parameter] string MaxVal { get; set; }
+
+
     bool ShowInputForm { get; set; }
     bool ValidationOK { get; set; }
     string NewValString { get; set; }

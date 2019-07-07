@@ -1,7 +1,20 @@
 ﻿@page "/"
 
-    <TagDisplay TagName="LottoAttuale"></TagDisplay>
-<OpcuaSessionControlelr/>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <TagDisplay TagName="LottoAttuale"></TagDisplay>
+            <TagDisplay TagName="NumeroPezziProdottiProgramma_1" Editable="false"></TagDisplay>
+        </div>
+        <div class="col-sm">
+            <TagDisplay TagName="LottoAttuale" Editable="true"></TagDisplay>
+            <TagDisplay TagName="NumeroPezziProdottiProgramma_1" Editable="true"></TagDisplay>
+        </div>
+    </div>
+</div>
+
+
+<OpcuaSessionControlelr />
 
 
 

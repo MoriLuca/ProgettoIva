@@ -196,7 +196,6 @@ namespace LMOpcuaConnector.Model
 
                 foreach (var nextRd in nextRefs)
                 {
-
                     //Console.WriteLine("   + {0}, {1}, {2}", nextRd.DisplayName, nextRd.BrowseName, nextRd.NodeClass);
                     if (rd.DisplayName.Text == rootTagFolder) subscriptionArray.Add(nextRd);
                 }
