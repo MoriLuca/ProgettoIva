@@ -2,7 +2,9 @@
 @inject Data.Db db
 
 
+<SimpleButton Clicked="@(async () => await HandleRedraw())">Redraw</SimpleButton>
 
+<LineChart ref="lineChart" TItem="double" />
 
 <table class="table">
     <thead>
@@ -31,3 +33,47 @@
 </table>
 
 
+@code{
+LineChart<double> lineChart = new LineChart<double>();
+
+protected override async Task OnAfterRenderAsync()
+{
+    await HandleRedraw();
+}
+
+async Task HandleRedraw()
+{
+    lineChart.Clear();
+
+    lineChart.AddLabel(Labels);
+
+    lineChart.AddDataSet(GetLineChartDataset());
+
+    await lineChart.Update();
+}
+
+LineChartDataset<double> GetLineChartDataset()
+{
+    return new LineChartDataset<double>
+    {
+        Label = "# of randoms",
+        Data = RandomizeData(),
+        BackgroundColor = backgroundColors,
+        BorderColor = borderColors,
+        Fill = true,
+        PointRadius = 2,
+        BorderDash = new List<int> { }
+    };
+}
+
+string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
+List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+List<double> RandomizeData()
+{
+    var r = new Random(DateTime.Now.Millisecond);
+
+    return new List<double> { r.Next(3, 50) * r.NextDouble(), r.Next(3, 50) * r.NextDouble(), r.Next(3, 50) * r.NextDouble(), r.Next(3, 50) * r.NextDouble(), r.Next(3, 50) * r.NextDouble(), r.Next(3, 50) * r.NextDouble() };
+}
+}

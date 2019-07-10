@@ -12,6 +12,9 @@ using exware.Data;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace exware
 {
@@ -31,11 +34,23 @@ namespace exware
             services.AddSingleton<EventHandlerLinker>();
             services.AddHostedService<Services.Worker>();
 
+            services
+    .AddBlazorise(options =>
+    {
+        options.ChangeTextOnKeyPress = true; // optional
+    })
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app
+  .UseBootstrapProviders()
+  .UseFontAwesomeIcons();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
