@@ -22,11 +22,11 @@ namespace exware
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>();
-            services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
+            //services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>();
+            //services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<LMLogger.Model.Logger>();
             services.AddSingleton<LMEmail.Model.EmailHandler>();
-            services.AddSingleton<EventHandlerLinker>();
+            //services.AddSingleton<EventHandlerLinker>();
             services.AddHostedService<Services.Worker>();
         }
 

@@ -26,16 +26,13 @@ namespace LMEmail.Model
 
         public void SendEmail(string from, string to, string subj, string body, bool isHtml)
         {
-            using (var message = new MailMessage(from, to)
-            {
-                Subject = subj,
-                Body = body,
-                IsBodyHtml = isHtml
-            })
+            using (var message = new MailMessage(from, to) { Subject = subj, Body = body, IsBodyHtml = isHtml })
             {
                 if (smtp != null)
                     smtp.Send(message);
             }
+
+
         }
 
         public void SendEmailWithDefaultSettings(string subj, string body, bool isHtml)
