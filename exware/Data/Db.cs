@@ -11,13 +11,13 @@ namespace exware.Data
         public Db(DbContextOptions<Db> options)
         : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;port=3306;database=exware;uid=root;password=0000");
+            optionsBuilder.UseMySql("server=luca-mori.it;port=3306;database=exware;uid=user;password=0000");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
