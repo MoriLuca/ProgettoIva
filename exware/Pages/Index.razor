@@ -1,31 +1,14 @@
 ﻿@page "/"
+@inject LMEmail.Model.EmailHandler email
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm">
-            <div class="mt-1">
-                <TagDisplay TagName="LottoAttuale"></TagDisplay>
-            </div>
-            <div class="mt-1">
-                <TagDisplay TagName="NumeroPezziProdottiProgramma_1" Editable="false"></TagDisplay>
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="mt-1">
-                <TagDisplay TagName="LottoAttuale" Editable="true"></TagDisplay>
-            </div>
-            <div class="mt-1">
-                <TagDisplay TagName="NumeroPezziProdottiProgramma_1" Editable="true"></TagDisplay>
-            </div>
-            <div class="mt-1">
-                <TagDisplay TagName="Contapezzi" Editable="true"></TagDisplay>
-            </div>
-        </div>
-    </div>
-</div>
+<button class="btn btn-dark" @onclick="@Click">Click to spam and break the email, thanks!</button>
 
-
-<OpcuaSessionControlelr />
+@code{
+private void Click()
+{
+    email.SendEmailWithDefaultSettings("Someone Clicked", "My friend someone clicked that button.", false);
+}
+}
 
 
 
