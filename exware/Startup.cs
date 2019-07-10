@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using exware.Data;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace exware
 {
@@ -22,12 +23,14 @@ namespace exware
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddDbContext<Db>(ServiceLifetime.Singleton);
             services.AddSingleton<LMOpcuaConnector.Model.OPCUAClient>();
             services.AddSingleton<LMOpcuaConnector.Model.OPCUATagEventHandler>();
             services.AddSingleton<LMLogger.Model.Logger>();
             services.AddSingleton<LMEmail.Model.EmailHandler>();
             services.AddSingleton<EventHandlerLinker>();
             services.AddHostedService<Services.Worker>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

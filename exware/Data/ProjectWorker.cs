@@ -11,13 +11,15 @@ namespace exware.Data
         private readonly OPCUAClient opc;
         private readonly Logger logger;
         private readonly EmailHandler email;
+        private readonly Db db;
 
         #region ctor
-        public EventHandlerLinker(OPCUAClient _opc,Logger _logger, EmailHandler _email)
+        public EventHandlerLinker(OPCUAClient _opc,Logger _logger, EmailHandler _email, Db _db)
         {
             opc = _opc;
             logger = _logger;
             email = _email;
+            db = _db;
         }
         #endregion
 
@@ -28,7 +30,6 @@ namespace exware.Data
             try
             {
                 logger.LogInfo(this, "Contappezzi intercettato, tag resettata");
-                //email.SendEmailWithDefaultSettings("Contapezzi", "<h2>Contappezzi incrementato.</h2>", true);
                 opc.WriteTag("Contapezzi", false);
             }
             catch
@@ -40,6 +41,8 @@ namespace exware.Data
 
         public void ContapezziHasChanged(object sender, LMOpcuaConnector.Data.Tag tag)
         {
+            db.Tags.Add(new Db.Tag4Db(tag));
+            db.SaveChanges();
             logger.LogInfo(this, $"Il valore del contapezzi per il programma 1 vale : {tag.Value}");
         }
 
