@@ -1,5 +1,33 @@
 ﻿@page "/Chart"
+@inject Data.Db db
 
 
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Tag</th>
+            <th scope="col">Time</th>
+            <th scope="col">Value</th>
+            <th scope="col">Node</th>
+            <th scope="col">Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in db.Tags.OrderByDescending(p => p.Time).Take(10))
+        {
+
+            <tr>
+                <td>@tag.Name</td>
+                <td>@tag.Time.ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td>@tag.Value</td>
+                <td>@tag.Node</td>
+                <td>@tag.Type</td>
+            </tr>
+
+        }
+    </tbody>
+</table>
 
 
