@@ -11,5 +11,7 @@ namespace LMOpcuaConnector.Data
         public ServerExportMethod ServerExportMethod { get; set; }
         public int PublishingInterval { get; set; } = 1000;
         public string RootTagsFolder { get; set; } = null;
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 }

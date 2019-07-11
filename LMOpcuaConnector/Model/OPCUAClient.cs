@@ -25,6 +25,7 @@ namespace LMOpcuaConnector.Model
         static bool autoAccept = false;
         static ExitCode exitCode;
         ReferenceDescriptionCollection subscriptionArray = new ReferenceDescriptionCollection();
+        UserIdentity uid;
 
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace LMOpcuaConnector.Model
             serverExportMethod = init.ServerExportMethod;
             rootTagFolder = init.RootTagsFolder;
             ListOfTags = new ListOfTags();
+            uid = new UserIdentity(init.UserName, init.Password);
         }
         #endregion
 
@@ -86,7 +88,6 @@ namespace LMOpcuaConnector.Model
         {
             try
             {
-
                 RunClient().Wait();
             }
             catch (Exception ex)
@@ -152,7 +153,7 @@ namespace LMOpcuaConnector.Model
             exitCode = ExitCode.ErrorCreateSession;
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-            session = await Session.Create(config, endpoint, false, "LMOpcuaSession", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+            session = await Session.Create(config, endpoint, false, "LMOpcuaSession", 60000, uid, null);
 
             // register keep alive handler
             session.KeepAliveInterval = 1000;
